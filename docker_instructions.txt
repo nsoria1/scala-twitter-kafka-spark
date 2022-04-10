@@ -1,0 +1,7 @@
+docker-compose -f docker-compose.yml up -d
+
+// print messages in topic
+kafka-console-consumer --bootstrap-server localhost:29092 --topic twitter --from-beginning --max-messages 15
+
+// count messages in topic
+kafka-run-class kafka.tools.GetOffsetShell --broker-list localhost:9092,localhost:9093,localhost:9094 --topic twitter --time -1
