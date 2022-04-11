@@ -1,5 +1,8 @@
 docker-compose -f docker-compose.yml up -d
 
+// Shell into container
+docker exec -it twitter-kafka-spark_kafka_1 bash
+
 // print messages in topic
 kafka-console-consumer --bootstrap-server localhost:29092 --topic twitter --from-beginning --max-messages 15
 
