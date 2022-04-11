@@ -1,8 +1,13 @@
-[36mRun starting. Expected test count is: 1[0m
-[32mJUnitWrapperSuite:[0m
-[32m- testOK[0m
-[36mRun completed in 138 milliseconds.[0m
-[36mTotal number of tests run: 1[0m
-[36mSuites: completed 1, aborted 0[0m
-[36mTests: succeeded 1, failed 0, canceled 0, ignored 0, pending 0[0m
-[32mAll tests passed.[0m
+[31m*** RUN ABORTED ***[0m
+[31m  java.lang.ClassNotFoundException: org.scalatestplus.junit.JUnitWrapperSuite[0m
+[31m  at java.net.URLClassLoader.findClass(URLClassLoader.java:382)[0m
+[31m  at java.lang.ClassLoader.loadClass(ClassLoader.java:418)[0m
+[31m  at java.lang.ClassLoader.loadClass(ClassLoader.java:351)[0m
+[31m  at org.scalatest.tools.Runner$.loadJUnitWrapperClass(Runner.scala:1041)[0m
+[31m  at org.scalatest.tools.Runner$.doRunRunRunDaDoRunRun(Runner.scala:1211)[0m
+[31m  at org.scalatest.tools.Runner$.$anonfun$runOptionallyWithPassFailReporter$24(Runner.scala:993)[0m
+[31m  at org.scalatest.tools.Runner$.$anonfun$runOptionallyWithPassFailReporter$24$adapted(Runner.scala:971)[0m
+[31m  at org.scalatest.tools.Runner$.withClassLoaderAndDispatchReporter(Runner.scala:1482)[0m
+[31m  at org.scalatest.tools.Runner$.runOptionallyWithPassFailReporter(Runner.scala:971)[0m
+[31m  at org.scalatest.tools.Runner$.main(Runner.scala:775)[0m
+[31m  ...[0m
