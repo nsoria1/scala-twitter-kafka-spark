@@ -1,8 +1,6 @@
 package tests
 
-import com.nsoria.TwitterInstance
 import org.scalatest.funsuite.AnyFunSuite
-import org.mockito.Mock
 import org.scalatestplus.mockito.MockitoSugar
 
 class TwitterGetterTest extends AnyFunSuite with MockitoSugar {
