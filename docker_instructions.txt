@@ -8,3 +8,6 @@ kafka-console-consumer --bootstrap-server localhost:29092 --topic twitter --from
 
 // count messages in topic
 kafka-run-class kafka.tools.GetOffsetShell --broker-list localhost:9092,localhost:9093,localhost:9094 --topic twitter --time -1
+
+// run the scala app to get data in twitter
+java -jar target/twitter-kafka-0.0.1-jar-with-dependencies.jar

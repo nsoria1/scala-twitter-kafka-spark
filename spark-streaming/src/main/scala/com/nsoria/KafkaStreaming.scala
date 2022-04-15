@@ -2,8 +2,8 @@ package com.nsoria
 
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.streaming.Trigger.ProcessingTime
-import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
+import org.apache.spark.sql.types._
+import org.apache.spark.sql.functions.from_json
 
 object KafkaStreaming extends App {
 
@@ -17,6 +17,13 @@ object KafkaStreaming extends App {
   // Set error log to avoid too verbose console log
   spark.sparkContext.setLogLevel("ERROR")
 
+  val schema = new StructType()
+    .add("username", StringType)
+    .add("message", StringType)
+    .add("favorite", IntegerType)
+    .add("retweets", IntegerType)
+    .add("messageTime", StringType)
+
   // Read from Kafka cluster
   val initDf = spark
     .readStream
@@ -25,27 +32,25 @@ object KafkaStreaming extends App {
     .option("subscribe", "twitter")
     .option("startingOffsets", "earliest")
     .load()
+    .select(
+      col("topic"),
+      col("offset"),
+      from_json(col("value").cast("string"), schema).alias("data")
+    )
 
   // Printing Dataframe schema from Kafka
   initDf.printSchema()
 
-  // Parse data from Kafka
-  val inputDf = initDf.selectExpr("CAST(value as STRING)")
-
-  val schema = new StructType()
-    .add("username", StringType)
-    .add("message", StringType)
-    .add("favorite", IntegerType)
-    .add("retweets", IntegerType)
-    .add("messageTime", IntegerType)
-
-  val parsedDf = inputDf.select(from_json(col("value"), schema).as("data"))
-    .select("data.*")
-
-
-  parsedDf.writeStream
+  // Write output to console
+  val rawData = initDf.
+    select(
+      col("topic"),
+      col("offset"),
+      col("data.*"))
+    .writeStream
     .format("console")
-    .outputMode("complete")
-    .trigger(ProcessingTime("10 seconds"))
     .start()
+
+  // Await manual stream stop
+  rawData.awaitTermination()
 }
