@@ -1,14 +1,15 @@
 package com.nsoria
 
 import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.functions.{col, when, sum}
+import org.apache.spark.sql.functions.{col, date_format, sum, to_timestamp, when}
+import org.apache.spark.sql.streaming.StreamingQuery
 
 trait StreamHelper {
 
   def totalFavorites(df: DataFrame): Int = {
     // Get the count of tweets that had been liked in the mini batch
     df
-      .agg(sum(when(col("favorite") > 0, true)))
+      .agg(sum(when(col("data.favorite") > 0, 1)))
       .first()
       .toString()
       .toInt
@@ -24,7 +25,19 @@ trait StreamHelper {
   }
 
   def tweetsPerMinute(df: DataFrame): Int = {
-
+    df
+      .withColumn(
+        "messageTimeFormatted", 
+        to_timestamp(col("messageTime"), "EEE MMM dd HH:mm:ss zzz yyyy")
+      )
+      .withColumn(
+        "dateToGroup",
+        date_format(col("messageTimeFormatted"), "yyyyMMddhhmm")
+      )
+      .groupBy("dateToGroup")
+      .count()
+      .first()
+      .toString
+      .toInt
   }
-
 }

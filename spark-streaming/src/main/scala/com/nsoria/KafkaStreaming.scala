@@ -5,7 +5,7 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.functions.from_json
 
-object KafkaStreaming extends App {
+object KafkaStreaming extends App with StreamHelper {
 
   // Initiate Spark Session
   val spark = SparkSession
@@ -16,6 +16,7 @@ object KafkaStreaming extends App {
 
   // Set error log to avoid too verbose console log
   spark.sparkContext.setLogLevel("ERROR")
+  spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
 
   val schema = new StructType()
     .add("username", StringType)
@@ -50,6 +51,10 @@ object KafkaStreaming extends App {
     .writeStream
     .format("console")
     .start()
+
+  // Write aggregation outputs
+  val result = totalFavorites(initDf)
+  println(result)
 
   // Await manual stream stop
   rawData.awaitTermination()
