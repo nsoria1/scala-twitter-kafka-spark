@@ -1,72 +1,74 @@
 package com.nsoria
 
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.streaming.StreamingQuery
+import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
+import com.nsoria.Variables._
 
 object KafkaStreamingToPostgres extends App {
 
   // Initiate Spark Session
   val spark = SparkSession
     .builder()
-    .master("local")
-    .appName("KafkaReader")
+    .master(SPARK_MASTER)
+    .appName(APP_NAME)
     .getOrCreate()
 
-//  val schema = new StructType()
-//    .add("username", StringType)
-//    .add("message", StringType)
-//    .add("favorite", IntegerType)
-//    .add("retweets", IntegerType)
-//    .add("messageTime", StringType)
+  spark.sparkContext.setLogLevel("ERROR")
 
-  // Read from Kafka cluster
-  val initDf = spark
-    .readStream
-    .format("kafka")
-    .option("kafka.bootstrap.servers", "localhost:29092")
-    .option("subscribe", "twitter")
-    //.option("startingOffsets", "earliest")
-    .option("startingOffsets", "earliest")
-    .load()
+  def readStreamData(spark: SparkSession): DataFrame = {
 
-  // Printing Dataframe schema from Kafka
-  initDf.printSchema()
+//    val schema = new StructType()
+//      .add("username", StringType)
+//      .add("message", StringType)
+//      .add("favorite", IntegerType)
+//      .add("retweets", IntegerType)
+//      .add("messageTime", StringType)
 
-  val resultDf = initDf
-    .select(
-      col("topic"),
-      col("offset"),
-      col("key").cast("string"),
-      col("value").cast("string")
-      //from_json(col("value").cast("string"), schema).alias("data")
-  )
+    val raw = spark
+      .readStream
+      .format("kafka")
+      .option("kafka.bootstrap.servers", BROKER)
+      .option("subscribe", TOPIC)
+      .option("startingOffsets", "earliest")
+      .load()
+      .select(
+        col("topic"),
+        col("offset"),
+        col("key").cast("string"),
+        col("value").cast("string"),
+      )
+    raw
+  }
 
-  // Write output to console
-  //  resultDf
-  //    .writeStream
-  //    .format("csv")
-  //    .option("format", "append")
-  //    .trigger(Trigger.ProcessingTime("5 seconds"))
-  //    .option("path", "data/")
-  //    .option("checkpointLocation", "checkpoint/")
-  //    .outputMode("append")
-  //    .start()
-  //    .awaitTermination()
+  def writeStreamData(df: DataFrame): StreamingQuery = {
+    // Printing Dataframe schema from Kafka
+    df.printSchema()
 
-  resultDf
-    .writeStream
-    .foreachBatch { (batch: DataFrame, batchId: Long) =>
-      batch.write
-        .format("jdbc")
-        .option("driver", "org.postgresql.Driver")
-        .option("url", "jdbc:postgresql://localhost:5432/postgres")
-        .option("dbtable","kafkadata")
-        .option("user","postgres")
-        .option("password", "postgres")
-        .mode("append")
-        .save()
-    }
-    .start()
-    .awaitTermination()
+    println(s"Is the current dataframe a streaming one? ${df.isStreaming.toString}")
 
+    df
+      .writeStream
+      .foreachBatch { (batch: DataFrame, batchId: Long) =>
+        //batch.persist()
+        batch.write
+          .format("jdbc")
+          .option("driver", "org.postgresql.Driver")
+          .option("checkpointLocation", CHECKPOINT_PATH)
+          .option("url", POSTGRES_URL)
+          .option("dbtable", "kafkadata")
+          .option("user", POSTGRES_USER)
+          .option("password", POSTGRES_PW)
+          .mode("append")
+          .save()
+        //batch.unpersist()
+        //()
+      }
+      .start()
+  }
+
+  val raw: DataFrame = readStreamData(spark = spark)
+  writeStreamData(raw).awaitTermination()
 }

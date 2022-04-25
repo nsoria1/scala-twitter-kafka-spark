@@ -1,4 +1,4 @@
-docker-compose -f docker-compose.yml up -d
+ docker-compose -f docker-compose.yml up -d
 
 // Shell into container
 docker exec -it twitter-kafka-spark_kafka_1 bash
