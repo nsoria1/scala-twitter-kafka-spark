@@ -10,7 +10,7 @@ object KafkaDataProducer extends App {
     // Define Kafka cluster parameters
     val kafkaCfg = {
       val settings = new Properties()
-      settings.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092")
+      settings.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
       settings.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
       settings.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
       settings

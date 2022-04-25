@@ -1,8 +1,14 @@
-[36mRun starting. Expected test count is: 1[0m
-[32mJUnitWrapperSuite:[0m
-[32m- testOK[0m
-[36mRun completed in 138 milliseconds.[0m
-[36mTotal number of tests run: 1[0m
-[36mSuites: completed 1, aborted 0[0m
-[36mTests: succeeded 1, failed 0, canceled 0, ignored 0, pending 0[0m
+[36mDiscovery starting.[0m
+[36mDiscovery completed in 164 milliseconds.[0m
+[36mRun starting. Expected test count is: 4[0m
+[32mTwitterGetterTest:[0m
+[32m- Testing TwitterInstance Trait[0m
+[32m- Handling response from Twitter[0m
+[32m- Format Twitter response test[0m
+[32mKafkaDataProducerTest:[0m
+[32m- should create a valid Kafka Producer object[0m
+[36mRun completed in 1 second, 807 milliseconds.[0m
+[36mTotal number of tests run: 4[0m
+[36mSuites: completed 3, aborted 0[0m
+[36mTests: succeeded 4, failed 0, canceled 0, ignored 0, pending 0[0m
 [32mAll tests passed.[0m

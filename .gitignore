@@ -2,3 +2,6 @@
 .DS_Store
 *.class
 *.log
+target
+target/
+checkpoint
