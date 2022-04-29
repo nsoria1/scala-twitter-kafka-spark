@@ -4,7 +4,6 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.streaming.StreamingQuery
-import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
 import com.nsoria.Variables._
 
 object KafkaStreamingToPostgres extends App {
@@ -52,7 +51,6 @@ object KafkaStreamingToPostgres extends App {
     df
       .writeStream
       .foreachBatch { (batch: DataFrame, batchId: Long) =>
-        //batch.persist()
         batch.write
           .format("jdbc")
           .option("driver", "org.postgresql.Driver")
@@ -63,8 +61,6 @@ object KafkaStreamingToPostgres extends App {
           .option("password", POSTGRES_PW)
           .mode("append")
           .save()
-        //batch.unpersist()
-        //()
       }
       .start()
   }

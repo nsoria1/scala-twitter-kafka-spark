@@ -1,4 +1,9 @@
 version: "3"
+
+networks:
+  net:
+    driver: bridge
+
 services:
   zookeeper:
     image: 'bitnami/zookeeper:latest'
@@ -28,3 +33,13 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - '5432:5432'
+
+  twitter:
+    build:
+      context: twitter-kafka/
+      dockerfile: Dockerfile
+    container_name: twitter-kafka-producer
+    restart: always
+    networks:
+      - net
+
